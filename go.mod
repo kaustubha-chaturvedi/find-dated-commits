@@ -1,0 +1,3 @@
+module fc
+
+go 1.24.3
