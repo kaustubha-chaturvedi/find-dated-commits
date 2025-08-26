@@ -10,6 +10,12 @@ import (
 	"time"
 )
 
+func isGitRepo(path string) bool {
+	cmd := exec.Command("git", "-C", path, "rev-parse", "--is-inside-work-tree")
+	err := cmd.Run()
+	return err == nil
+}
+
 func runGitLog(repo, searchDate string, out *os.File) {
 	fmt.Fprintf(out, "📂 %s\n", repo)
 
@@ -54,6 +60,28 @@ func main() {
 		*outFile = fmt.Sprintf("commits-%s-%s-%s.txt", parts[0], parts[1], parts[2])
 	}
 
+	
+	foundRepo := false
+	if *recursive {
+		filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+			if err == nil && info.IsDir() && info.Name() == ".git" {
+				foundRepo = true
+				return filepath.SkipDir
+			}
+			return nil
+		})
+	} else {
+		if isGitRepo(dir) {
+			foundRepo = true
+		}
+	}
+
+	if !foundRepo {
+		fmt.Fprintln(os.Stderr, "Error: no git repository found in the given path")
+		os.Exit(1)
+	}
+
+	
 	out, err := os.Create(*outFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating file: %v\n", err)
@@ -72,5 +100,4 @@ func main() {
 	} else {
 		runGitLog(dir, searchDate, out)
 	}
-	fmt.Println("Done")
 }
