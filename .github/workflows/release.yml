@@ -1,0 +1,50 @@
+name: Auto Go Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Get latest release tag
+        id: get_version
+        run: |
+          latest=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' || echo "")
+          if [ -z "$latest" ]; then
+            echo "v1.0.0" > VERSION
+          else
+            # bump patch version: v1.2.3 -> v1.2.4
+            IFS='.' read -r major minor patch <<<"${latest#v}"
+            patch=$((patch+1))
+            echo "v${major}.${minor}.${patch}" > VERSION
+          fi
+          echo "next_tag=$(cat VERSION)" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Go binary
+        run: |
+          mkdir -p build
+          go build -o build/gfc ./...
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.next_tag }}
+          name: Release ${{ steps.get_version.outputs.next_tag }}
+          files: ./build/gfc
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
