@@ -3,7 +3,7 @@ Here’s a clean **README.md** you can drop into your Go project 🚀
 ---
 
 ````markdown
-# fc – Git Find Commits
+# gfc – Git Find Commits
 
 A simple CLI tool to collect all Git commits for a specific day across one or multiple repositories.  
 Results are always written to a text file (no terminal output).
@@ -25,22 +25,22 @@ Results are always written to a text file (no terminal output).
 
 1. Clone this project:
    ```bash
-   git clone https://github.com/yourname/fc.git
-   cd fc
+   git clone https://github.com/kaustubha-chaturvedi/find-dated-commits.git
+   cd gfc
 ````
 
 2. Build the binary:
 
    ```bash
-   go build -o fc
+   go build -o gfc
    ```
 
 3. (Optional) Move it to your `$PATH`:
 
    ```bash
-   mv fc ~/bin/       # if ~/bin is in PATH
+   mv gfc ~/bin/       # if ~/bin is in PATH
    # or
-   sudo mv fc /usr/local/bin/
+   sudo mv gfc /usr/local/bin/
    ```
 
 ---
@@ -50,7 +50,7 @@ Results are always written to a text file (no terminal output).
 ### Syntax
 
 ```bash
-fc [flags] [directory] [date]
+gfc [flags] [directory] [date]
 ```
 
 ### Flags
@@ -71,7 +71,7 @@ fc [flags] [directory] [date]
 * **Commits for today in current repo**
 
   ```bash
-  fc
+  gfc
   ```
 
   → writes `commits-26-08-2025.txt`
@@ -79,19 +79,19 @@ fc [flags] [directory] [date]
 * **Commits for a specific date in current repo**
 
   ```bash
-  fc . 15/08/2025
+  gfc . 15/08/2025
   ```
 
 * **Recursive search in all repos under `~/projects`**
 
   ```bash
-  fc -r ~/projects 15/08/2025
+  gfc -r ~/projects 15/08/2025
   ```
 
 * **Recursive search with custom filename**
 
   ```bash
-  fc -r ~/projects 15/08/2025 -f my-commits.txt
+  gfc -r ~/projects 15/08/2025 -f my-commits.txt
   ```
 
 ---
